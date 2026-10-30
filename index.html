@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Front Wave Debt Rank — your company's cost of debt ranked against 1,364 listed Indian companies' filings.">
+<style>html,body{margin:0;padding:0}img{max-width:100%}</style>
+<title>Debt Rank</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;650;700&family=Newsreader:ital,opsz,wght@1,6..72,400&family=JetBrains+Mono:wght@450;550;700&display=swap">
+<style>
+/* Layout: one question — where do you rank — answered against 1,364 real balance sheets.
+   Navy hero with the search, then the report: rank, distribution, map, league, peers, the gap. */
+:root{
+  --paper:#f5f5ef; --card:#ffffff; --glass:#edeee5;
+  --navy:#101d36; --navy-deep:#0d1b35;
+  --ink:#101d36; --ink-2:#3d4a66; --ink-3:#626b85; --ink-4:#7a849e;
+  --cta:#2450c0; --cta-hover:#1a3f9e; --on-cta:#ffffff; --accent:#2450c0;
+  --good:#0e7350; --warn:#7d5f08; --crit:#a93434;
+  --rule:rgba(16,29,54,.1); --rule-strong:rgba(16,29,54,.22); --wash:rgba(16,29,54,.04);
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --serif:Newsreader,Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,monospace;
+  --st-ink:#f5f6f8; --st-ink2:#b9c2d8; --st-ink3:#8b96b4;
+  --st-blue:#7fa2f5; --st-soft:#9db8f8; --st-warn:#e0be58; --st-crit:#f08779; --st-good:#34d399;
+  --st-rule:rgba(245,246,248,.16); --st-rule2:rgba(245,246,248,.3);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#101d36; --card:#1b3157; --glass:#1b3157;
+    --ink:#f5f6f8; --ink-2:#b9c2d8; --ink-3:#8b96b4; --ink-4:#626b85;
+    --cta:#ffffff; --cta-hover:#edeee5; --on-cta:#0d1b35; --accent:#7fa2f5;
+    --good:#34d399; --warn:#e0be58; --crit:#f08779;
+    --rule:rgba(245,246,248,.14); --rule-strong:rgba(245,246,248,.22); --wash:rgba(245,246,248,.1);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101d36; --card:#1b3157; --glass:#1b3157;
+  --ink:#f5f6f8; --ink-2:#b9c2d8; --ink-3:#8b96b4; --ink-4:#626b85;
+  --cta:#ffffff; --cta-hover:#edeee5; --on-cta:#0d1b35; --accent:#7fa2f5;
+  --good:#34d399; --warn:#e0be58; --crit:#f08779;
+  --rule:rgba(245,246,248,.14); --rule-strong:rgba(245,246,248,.22); --wash:rgba(245,246,248,.1);
+  color-scheme:dark;
+}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-weight:450;font-size:15.5px;line-height:1.5;font-feature-settings:"ss01","cv11","calt"}
+*{box-sizing:border-box}
+.inner{max-width:1060px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;text-wrap:balance} p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:550;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.display{font-size:clamp(23px,4vw,30px);font-weight:700;letter-spacing:-.045em;line-height:1.02}
+.lede{color:var(--ink-2);max-width:66ch}
+.meta{font-size:9.5px;font-weight:450;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.num{font-variant-numeric:tabular-nums}
+section{padding-block:46px}
+section.psec{border-top:1px solid var(--rule)}
+.sec-head{display:flex;flex-direction:column;gap:9px;margin-bottom:22px}
+
+.hero{background:var(--navy);background-image:radial-gradient(130% 90% at 85% -10%, rgba(157,184,248,.18), transparent 55%)}
+.hero .inner{padding-block:60px 50px;display:flex;flex-direction:column;gap:16px}
+.hero .eyebrow{color:var(--st-soft)}
+.hero h1{color:var(--st-ink);font-size:clamp(30px,5.8vw,50px);font-weight:700;letter-spacing:-.05em;line-height:.98}
+.hero h1 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--st-soft)}
+.hero .lede{color:var(--st-ink2);max-width:70ch}
+.hero .meta{color:var(--st-ink3)}
+.searchbox{position:relative;max-width:620px}
+.searchbox input{font:500 17px/1.5 var(--sans);color:var(--st-ink);background:rgba(13,27,53,.7);border:1px solid var(--st-rule2);border-radius:12px;padding:15px 18px;width:100%}
+.searchbox input::placeholder{color:var(--st-ink3)}
+.sugg{position:absolute;inset:auto 0 auto 0;top:calc(100% + 6px);background:var(--navy-deep);border:1px solid var(--st-rule2);border-radius:12px;overflow:hidden;z-index:30;box-shadow:0 18px 40px -22px rgba(0,0,0,.6)}
+.sugg button{display:flex;justify-content:space-between;gap:12px;width:100%;text-align:left;font:inherit;font-size:14px;color:var(--st-ink2);background:none;border:none;padding:11px 16px;cursor:pointer}
+.sugg button:hover{background:rgba(245,246,248,.08)}
+.sugg b{color:var(--st-ink);font-weight:600}
+.sugg .sm{font-family:var(--mono);font-size:11px;color:var(--st-ink3);white-space:nowrap}
+.manual-link{font:500 13px/1.5 var(--sans);color:var(--st-soft);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;width:max-content}
+.manual{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;max-width:760px;border:1px solid var(--st-rule2);border-radius:12px;padding:16px;background:rgba(13,27,53,.5)}
+.manual .f{display:flex;flex-direction:column;gap:4px}
+.manual label{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--st-ink3)}
+.manual input,.manual select{font:inherit;font-size:14px;color:var(--st-ink);background:rgba(16,29,54,.6);border:1px solid var(--st-rule2);border-radius:7px;padding:8px 10px;width:100%}
+.manual .go{font:600 13.5px/1.5 var(--sans);background:#fff;color:#0d1b35;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;align-self:end}
+input:focus,button:focus,select:focus,a:focus{outline:2px solid var(--accent);outline-offset:2px}
+.hero input:focus,.hero button:focus,.hero select:focus{outline-color:var(--st-soft)}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.tile .tl{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.tile .tv{font-size:24px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.tile .tc{font-size:12.5px;color:var(--ink-3)}
+.bigrank{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:26px;margin-bottom:14px}
+@media (max-width:640px){.bigrank{grid-template-columns:1fr}}
+.bigrank .pct{font-size:clamp(52px,9vw,84px);font-weight:700;letter-spacing:-.05em;line-height:.95;font-variant-numeric:tabular-nums}
+.bigrank .pct small{font-size:.45em;font-weight:650;color:var(--ink-3)}
+.bigrank .bl{font-size:16px;color:var(--ink-2);max-width:46ch}
+.bigrank .bl b{color:var(--ink)}
+.pbar{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--good),var(--warn) 55%,var(--crit));position:relative;margin-top:14px}
+.pbar .pm{position:absolute;top:-7px;width:4px;height:28px;border-radius:2px;background:var(--ink);transform:translateX(-50%)}
+.pbar-l{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--ink-3);margin-top:6px}
+.chart-card{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:20px;min-width:0}
+svg{display:block;width:100%;height:auto}
+.navyband{background:var(--navy)}
+.navyband .eyebrow{color:var(--st-soft)}
+.navyband .display{color:var(--st-ink)}
+.navyband .lede{color:var(--st-ink2)}
+.navy-card{border:1px solid var(--st-rule);border-radius:14px;background:rgba(13,27,53,.5);padding:20px}
+.navy-story{border-left:3px solid var(--st-blue);background:rgba(13,27,53,.55);border-radius:8px;padding:15px 19px;font-size:14.5px;color:var(--st-ink2);margin-top:16px}
+.navy-story b{color:var(--st-ink)}
+.story{border-left:3px solid var(--accent);background:var(--glass);border-radius:8px;padding:15px 19px;font-size:14.5px;color:var(--ink-2);margin-top:16px}
+.story b{color:var(--ink)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{font-family:var(--mono);font-size:9.5px;font-weight:550;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule-strong);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--rule)}
+td:last-child,th:last-child,td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.you td{background:var(--wash);font-weight:650}
+.peers{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+.peer{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.peer b{font-size:14.5px;font-weight:650;letter-spacing:-.01em}
+.peer .pr{font-size:22px;font-weight:700;color:var(--good);font-variant-numeric:tabular-nums}
+.peer .pm2{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.btn{font:600 14px/1.5 var(--sans);background:var(--cta);color:var(--on-cta);border:none;border-radius:8px;padding:11px 22px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{background:var(--cta-hover)}
+.btn-ghost{font:500 13px/1.5 var(--sans);color:var(--ink);background:transparent;border:1px solid var(--rule-strong);border-radius:8px;padding:9px 16px;cursor:pointer}
+.btn-ghost:hover{background:var(--wash)}
+.save-note{font-size:12.5px;color:var(--ink-3)}
+.row-btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.method{font-size:12.5px;color:var(--ink-3);max-width:80ch;margin-top:16px}
+footer{background:var(--navy-deep)}
+footer .inner{padding-block:30px;display:flex;flex-direction:column;gap:8px}
+footer p{font-size:12px;color:#8b96b4;max-width:84ch}
+footer .meta{color:#626b85}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="hero">
+  <div class="inner">
+    <p class="eyebrow">Front Wave Research · Private Credit Desk</p>
+    <h1>Every listed company's cost of debt. <em>Where's yours?</em></h1>
+    <p class="lede">We computed the effective interest rate every indebted listed Indian company actually paid last year — straight from their filings. Type your company. No forms, no uploads: your numbers are already in here, and so are everyone else's. Then see who borrows cheaper than you, by name.</p>
+    <p class="meta" id="data-meta">Loading the dataset…</p>
+    <div class="searchbox">
+      <input id="q" placeholder="Type your company or NSE ticker — e.g. PURVA, Jain Irrigation…" autocomplete="off" aria-label="Search company">
+      <div class="sugg" id="sugg" hidden></div>
+    </div>
+    <button class="manual-link" type="button" id="manual-toggle">Unlisted, or want to test your own numbers? Enter them manually →</button>
+    <div class="manual" id="manual" hidden>
+      <div class="f"><label for="m-name">Company (optional)</label><input id="m-name" placeholder="Your company"></div>
+      <div class="f"><label for="m-debt">Gross debt (Rs cr)</label><input id="m-debt" type="number" min="1" step="any" value="1200"></div>
+      <div class="f"><label for="m-rate">Avg cost of debt %</label><input id="m-rate" type="number" min="2" max="30" step="any" value="12.2"></div>
+      <div class="f"><label for="m-ebitda">EBITDA (Rs cr, opt)</label><input id="m-ebitda" type="number" min="0" step="any" value="220"></div>
+      <div class="f"><label for="m-sector">Sector</label><select id="m-sector"></select></div>
+      <button class="go" type="button" id="m-go">Rank me</button>
+    </div>
+  </div>
+</div>
+
+<div id="report" hidden>
+<section class="psec" id="s-rank">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="eyebrow">01 / The rank</p>
+      <h2 class="display" id="rank-title">—</h2>
+    </div>
+    <div class="bigrank">
+      <div><p class="pct num" id="r-pct">—</p></div>
+      <div>
+        <p class="bl" id="r-line">—</p>
+        <div class="pbar"><span class="pm" id="r-pm" style="left:50%"></span></div>
+        <div class="pbar-l"><span>CHEAP MONEY</span><span>MEDIAN</span><span>EXPENSIVE MONEY</span></div>
+      </div>
+    </div>
+    <div class="tiles" id="r-tiles"></div>
+  </div>
+</section>
+
+<section class="navyband" id="s-dist">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="eyebrow">02 / The distribution</p>
+      <h2 class="display">1,364 real borrowers. One of them is you.</h2>
+    </div>
+    <div class="navy-card"><div id="hist"></div></div>
+    <p class="navy-story" id="dist-story"></p>
+  </div>
+</section>
+
+<section class="psec" id="s-map">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="eyebrow">03 / The map</p>
+      <h2 class="display">Cost against leverage — are you paying for your risk, or for inertia?</h2>
+      <p class="lede">Every dot is a real company: across is leverage (debt to EBITDA), up is what they pay. The line is the median at each leverage. Being above the line means the market charges someone like you less than your lenders charge you.</p>
+    </div>
+    <div class="chart-card"><div id="scatter"></div></div>
+    <p class="story" id="map-story"></p>
+  </div>
+</section>
+
+<section class="psec" id="s-league">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="eyebrow">04 / The league</p>
+      <h2 class="display" id="league-title">Your sector's table.</h2>
+    </div>
+    <div class="chart-card" style="overflow-x:auto"><table id="league"><thead><tr>
+      <th>#</th><th>Company</th><th class="n">Debt (Rs cr)</th><th class="n">Debt/EBITDA</th><th class="n">Cost of debt</th>
+    </tr></thead><tbody></tbody></table></div>
+    <p class="story" id="league-story"></p>
+  </div>
+</section>
+
+<section class="psec" id="s-peers">
+  <div class="inner">
+    <div class="sec-head">
+      <p class="eyebrow">05 / The proof</p>
+      <h2 class="display">Companies like you, borrowing cheaper. By name.</h2>
+      <p class="lede">Similar leverage, comparable scale, lower cost — from the same filings. If they can print these rates, the question is why you can't. Answering that question is the desk's job.</p>
+    </div>
+    <div class="peers" id="peers"></div>
+    <div class="row-btns">
+      <button class="btn-ghost" type="button" id="copy-card">Copy my rank card</button>
+      <span class="save-note" id="copied" hidden>Copied — paste it anywhere.</span>
+      <a class="btn" href="https://frontwaveresearch.com" target="_blank" rel="noopener">Close the gap with the desk →</a>
+    </div>
+    <p class="method" id="method"></p>
+  </div>
+</section>
+</div>
+
+<footer>
+  <div class="inner">
+    <p class="meta">Front Wave Research LLP · SEBI Reg. INH000018407</p>
+    <p>A research instrument. Effective cost of debt is implied: reported FY finance cost divided by reported FY total debt (leases and all borrowings included), from exchange filings via market data providers. It can differ from a company's stated average cost — restructured or subsidised debt reads low, part-year drawdowns read high. Rankings are descriptive, not a credit opinion, an offer or investment advice. Searches run in your browser; nothing you type is stored or sent.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString("en-IN");
+const fmt1=n=>(Math.round(n*10)/10).toLocaleString("en-IN");
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const PULLED="29 Oct 2026";
+let DATA=[],SECTORS=[];
+let CUR=null; // {t,c,s,d,r,l,e,manual}
+
+fetch("league.json").then(r=>r.json()).then(d=>{
+ DATA=d;
+ SECTORS=[...new Set(d.map(x=>x.s))].sort();
+ $("m-sector").innerHTML=SECTORS.map(s=>`<option>${esc(s)}</option>`).join("");
+ $("data-meta").textContent=`${DATA.length.toLocaleString("en-IN")} listed companies · FY filings via exchange data · pulled ${PULLED} · searches stay in your browser`;
+ // default example so the page is alive at rest
+ const jain=DATA.find(x=>x.t==="JISLJALEQS");
+ if(jain)show(jain,true);
+}).catch(()=>{$("data-meta").textContent="Couldn't load the dataset — reload the page.";});
+
+/* ---------- search ---------- */
+$("q").addEventListener("input",()=>{
+ const q=$("q").value.trim().toLowerCase();
+ const box=$("sugg");
+ if(q.length<2||!DATA.length){box.hidden=true;return;}
+ const hits=DATA.filter(x=>x.t.toLowerCase().includes(q)||x.c.toLowerCase().includes(q)).slice(0,8);
+ if(!hits.length){box.innerHTML=`<button type="button" disabled><span>No listed match — use manual entry below</span></button>`;box.hidden=false;return;}
+ box.innerHTML=hits.map((x,i)=>`<button type="button" data-pick="${esc(x.t)}"><span><b>${esc(x.c)}</b> · ${esc(x.t)}</span><span class="sm">${fmt(x.d)} cr @ ${fmt1(x.r)}%</span></button>`).join("");
+ box.hidden=false;
+});
+$("sugg").addEventListener("click",e=>{
+ const b=e.target.closest("[data-pick]");if(!b)return;
+ const x=DATA.find(y=>y.t===b.dataset.pick);
+ $("sugg").hidden=true;$("q").value=x?x.c:"";
+ if(x)show(x,false);
+});
+document.addEventListener("click",e=>{if(!e.target.closest(".searchbox"))$("sugg").hidden=true;});
+$("manual-toggle").addEventListener("click",()=>{$("manual").hidden=!$("manual").hidden;});
+$("m-go").addEventListener("click",()=>{
+ const d=+$("m-debt").value||0,r=+$("m-rate").value||0,e=+$("m-ebitda").value||0;
+ if(d<=0||r<2||r>30)return;
+ show({t:"",c:($("m-name").value||"Your company").slice(0,48),s:$("m-sector").value,d,r:Math.round(r*100)/100,
+       l:e>0?Math.round(d/e*10)/10:null,e:e>0?e:null,manual:true},false);
+});
+
+/* ---------- stats helpers ---------- */
+const med=a=>{const s=[...a].sort((x,y)=>x-y);const n=s.length;return n?(n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2):0;};
+function pool(me){ // financial companies rank against financials, everyone else against the rest
+ const isFin=me.s==="Finance";
+ return DATA.filter(x=>(x.s==="Finance")===isFin&&(me.manual||x.t!==me.t));
+}
+function levCohort(me,P){
+ if(me.l==null)return P.filter(x=>x.d>=me.d*0.25&&x.d<=me.d*4);
+ return P.filter(x=>x.l!=null&&Math.abs(x.l-me.l)<=1.5);
+}
+
+/* ---------- report ---------- */
+function show(me,isDefault){
+ CUR=me;
+ $("report").hidden=false;
+ const P=pool(me);
+ const cheaper=P.filter(x=>x.r<me.r).length;
+ const pct=Math.round(cheaper/Math.max(P.length,1)*100); // % of pool cheaper than you
+ const mAll=med(P.map(x=>x.r));
+ const LC=levCohort(me,P); const mLev=LC.length>=15?med(LC.map(x=>x.r)):null;
+ const sec=P.filter(x=>x.s===me.s); const mSec=sec.length>=8?med(sec.map(x=>x.r)):null;
+ const refMed=mLev??mSec??mAll;
+ const gap=me.d*Math.max(me.r-refMed,0)/100;
+
+ $("rank-title").textContent=(me.c||"You")+(isDefault?" — example. Search your company above.":"");
+ const ord=n=>{const v=n%100;if(v>=11&&v<=13)return "th";return ["th","st","nd","rd"][n%10]||"th";};
+ $("r-pct").innerHTML=pct+`<small>${ord(pct)} percentile</small>`;
+ $("r-line").innerHTML=`<b>${esc(me.c)}</b> pays an effective <b>${fmt1(me.r)}%</b> on Rs ${fmt(me.d)} cr — more expensive than <b>${pct}%</b> of ${P.length.toLocaleString("en-IN")} comparable listed borrowers${me.s==="Finance"?" (ranked against financial companies only)":""}.`;
+ $("r-pm").style.left=Math.max(2,Math.min(98,pct))+"%";
+ $("r-tiles").innerHTML=[
+  ["Your cost",fmt1(me.r)+"%","implied from FY filings"+(me.manual?" (your input)":"")],
+  ["Market median",fmt1(mAll)+"%",`across ${P.length.toLocaleString("en-IN")} borrowers`],
+  mLev!=null?["At your leverage",fmt1(mLev)+"%",`median of ${LC.length} companies near ${me.l!=null?fmt1(me.l)+"x":"your size"}`]:null,
+  mSec!=null?["Your sector",fmt1(mSec)+"%",`median of ${sec.length} in ${me.s}`]:null,
+  ["The gap",gap>0.5?"Rs "+fmt(gap)+" cr/yr":"At market","vs the median for a company like you"]
+ ].filter(Boolean).map(t=>`<div class="tile"><p class="tl">${t[0]}</p><p class="tv num">${t[1]}</p><p class="tc">${t[2]}</p></div>`).join("");
+
+ drawHist(me,P,mAll);
+ $("dist-story").innerHTML=pct>=60
+  ?`<b>You are in the expensive tail.</b> ${pct}% of comparable borrowers — most of them no better rated than you — pay less. The market has repriced; your book hasn't.`
+  :pct>=40?`<b>You sit near the middle.</b> Ordinary is still expensive: the gap between you and the cheapest quartile is where Rs ${fmt(me.d*Math.max(me.r-quantile(P.map(x=>x.r),0.25),0)/100)} cr a year lives.`
+  :`<b>You borrow well.</b> Cheaper than ${100-pct}% of the market. The remaining question is structure and tenor, not price.`;
+
+ drawScatter(me,P,LC);
+ $("map-story").innerHTML=mLev!=null
+  ?(me.r>mLev+0.4?`<b>You are above the line.</b> The ${LC.length} companies nearest your leverage pay a median ${fmt1(mLev)}%. You pay ${fmt1(me.r)}%. That ${fmt1(me.r-mLev)}pp is not your risk — it is your financing. On Rs ${fmt(me.d)} cr it costs Rs ${fmt(me.d*(me.r-mLev)/100)} cr a year.`
+   :`<b>You are on or below the line</b> — the market prices your leverage fairly. The savings here are in structure (tenor, security, covenants), not headline rate.`)
+  :`Add EBITDA to place yourself on the leverage axis; for now you're benchmarked by scale.`;
+
+ renderLeague(me,sec.length>=8?sec:P,sec.length>=8?me.s:"the market");
+ renderPeers(me,P,refMed,gap);
+ $("method").textContent=`Method: effective cost = FY finance cost ÷ FY total debt (all borrowings and leases), per exchange filings via market data, pulled ${PULLED}. Financial companies are ranked only against financial companies. Restructured debt can read artificially low; part-year drawdowns can read high. Rankings are descriptive, not a credit opinion.`;
+ buildCard(me,P,pct,mAll,mLev,mSec,gap);
+ if(!isDefault)location.hash="ranked";
+}
+const quantile=(a,q)=>{const s=[...a].sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.floor(q*s.length))];};
+
+/* ---------- charts ---------- */
+function drawHist(me,P,mAll){
+ const W=760,H=270,L=46,R=14,T=20,B=40;
+ const lo=3,hi=18,step=0.5;
+ const bins=[];for(let b=lo;b<hi;b+=step)bins.push(0);
+ P.forEach(x=>{const i=Math.min(bins.length-1,Math.max(0,Math.floor((x.r-lo)/step)));bins[i]++;});
+ const mx=Math.max(...bins);
+ const x=v=>L+(W-L-R)*(v-lo)/(hi-lo), y=c=>T+(H-T-B)*(1-c/mx);
+ let g="";
+ for(const v of [4,6,8,10,12,14,16])
+  g+=`<text x="${x(v)}" y="${H-B+16}" text-anchor="middle" font-size="10" fill="var(--st-ink3)" font-family="var(--mono)">${v}%</text>`;
+ bins.forEach((c,i)=>{const v=lo+i*step;
+  const mine=me.r>=v&&me.r<v+step;
+  g+=`<rect x="${x(v)+1}" y="${y(c)}" width="${(W-L-R)/bins.length-2}" height="${Math.max(y(0)-y(c),c?2:0)}" rx="2" fill="${mine?"var(--st-crit)":"var(--st-blue)"}" opacity="${mine?1:.55}"/>`;});
+ g+=`<line x1="${x(mAll)}" y1="${T}" x2="${x(mAll)}" y2="${H-B}" stroke="var(--st-warn)" stroke-width="1.3" stroke-dasharray="5 4"/>`+
+    `<text x="${x(mAll)}" y="${T-6}" text-anchor="middle" font-size="9" letter-spacing="1" fill="var(--st-warn)" font-family="var(--mono)">MEDIAN ${fmt1(mAll)}%</text>`;
+ const mxX=Math.max(L+8,Math.min(W-R-8,x(me.r)));
+ g+=`<line x1="${mxX}" y1="${T}" x2="${mxX}" y2="${H-B}" stroke="var(--st-crit)" stroke-width="2"/>`+
+    `<text x="${mxX}" y="${H-B+30}" text-anchor="middle" font-size="10" font-weight="700" letter-spacing="1.5" fill="var(--st-crit)" font-family="var(--mono)">YOU · ${fmt1(me.r)}%</text>`;
+ $("hist").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Distribution of effective cost of debt">${g}</svg>`;
+}
+function drawScatter(me,P,LC){
+ const W=760,H=360,L=50,R=14,T=16,B=40;
+ const lmax=12,rlo=3,rhi=18;
+ const x=l=>L+(W-L-R)*Math.min(l,lmax)/lmax, y=r=>T+(H-T-B)*(1-(Math.min(Math.max(r,rlo),rhi)-rlo)/(rhi-rlo));
+ let g="";
+ for(const l of [0,2,4,6,8,10,12])
+  g+=`<line x1="${x(l)}" y1="${T}" x2="${x(l)}" y2="${H-B}" stroke="var(--rule)"/>`+
+     `<text x="${x(l)}" y="${H-B+16}" text-anchor="middle" font-size="10" fill="var(--ink-3)" font-family="var(--mono)">${l}x</text>`;
+ for(const r of [4,6,8,10,12,14,16])
+  g+=`<line x1="${L}" y1="${y(r)}" x2="${W-R}" y2="${y(r)}" stroke="var(--rule)"/>`+
+     `<text x="${L-7}" y="${y(r)+3.5}" text-anchor="end" font-size="10" fill="var(--ink-3)" font-family="var(--mono)">${r}%</text>`;
+ // dots
+ const pts=P.filter(p=>p.l!=null&&p.l>=0&&p.l<=lmax&&p.r>=rlo&&p.r<=rhi);
+ pts.forEach(p=>{
+  const inC=LC.includes(p);
+  g+=`<circle cx="${x(p.l)}" cy="${y(p.r)}" r="${inC?3.4:2.4}" fill="${inC?"var(--accent)":"var(--ink-4)"}" opacity="${inC?.8:.3}"><title>${esc(p.c)} — ${fmt1(p.r)}% at ${fmt1(p.l)}x</title></circle>`;});
+ // median line per leverage bucket
+ let path="",first=true;
+ for(let b=0;b<lmax;b+=1){
+  const seg=pts.filter(p=>p.l>=b&&p.l<b+1).map(p=>p.r);
+  if(seg.length<8)continue;
+  const mx2=x(b+0.5),my=y(med(seg));
+  path+=(first?"M":" L")+mx2+" "+my;first=false;
+ }
+ g+=`<path d="${path}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 4" opacity=".7"/>`;
+ if(me.l!=null)
+  g+=`<circle cx="${x(me.l)}" cy="${y(me.r)}" r="9" fill="var(--crit)" stroke="var(--card)" stroke-width="2.5"/>`+
+     `<text x="${x(me.l)}" y="${y(me.r)-14}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--ink)" font-family="var(--mono)">YOU</text>`;
+ g+=`<text x="${(L+W-R)/2}" y="${H-4}" text-anchor="middle" font-size="9.5" letter-spacing="1.5" fill="var(--ink-3)" font-family="var(--mono)">LEVERAGE · DEBT / EBITDA →</text>`;
+ $("scatter").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cost of debt vs leverage">${g}</svg>`;
+}
+function renderLeague(me,listIn,label){
+ $("league-title").textContent=label==="the market"?"The market table, around you.":`${label}: the table, around you.`;
+ const list=[...listIn];
+ if(!me.manual&&!list.find(x=>x.t===me.t))list.push(me);
+ if(me.manual)list.push(me);
+ list.sort((a,b)=>a.r-b.r);
+ const myIdx=list.findIndex(x=>x===me||(!me.manual&&x.t===me.t));
+ const tb=$("league").querySelector("tbody");
+ const rows=[];
+ // top 3 cheapest
+ for(let i=0;i<Math.min(3,list.length);i++)rows.push(i);
+ // window around you
+ for(let i=Math.max(3,myIdx-3);i<=Math.min(list.length-1,myIdx+2);i++)if(!rows.includes(i))rows.push(i);
+ let html="",prev=-1;
+ rows.forEach(i=>{
+  if(prev>=0&&i>prev+1)html+=`<tr><td colspan="5" style="text-align:center;color:var(--ink-4)">⋯</td></tr>`;
+  const p=list[i],isMe=i===myIdx;
+  html+=`<tr${isMe?' class="you"':''}><td class="num">${i+1}</td><td>${esc(p.c)}${isMe?" ← you":""}</td><td class="n">${fmt(p.d)}</td><td class="n">${p.l!=null?fmt1(p.l)+"x":"—"}</td><td class="n">${fmt1(p.r)}%</td></tr>`;
+  prev=i;
+ });
+ tb.innerHTML=html;
+ $("league-story").innerHTML=`<b>#${myIdx+1} of ${list.length}</b> in ${label} by cost of debt. The three names at the top are not luckier than you — they are better financed. Every row above you is a term sheet that already exists in this market.`;
+}
+function renderPeers(me,P,refMed,gap){
+ let cands=P.filter(x=>x.r<me.r-0.3&&x.d>=me.d*0.25&&x.d<=me.d*4);
+ if(me.l!=null){const tight=cands.filter(x=>x.l!=null&&Math.abs(x.l-me.l)<=2);if(tight.length>=5)cands=tight;}
+ cands.sort((a,b)=>(me.l!=null&&a.l!=null&&b.l!=null)?(Math.abs(a.l-me.l)-Math.abs(b.l-me.l)):(Math.abs(a.d-me.d)-Math.abs(b.d-me.d)));
+ const top=cands.slice(0,6);
+ $("peers").innerHTML=top.length?top.map(p=>`<div class="peer"><b>${esc(p.c)}</b>
+  <span class="pr num">${fmt1(p.r)}%</span>
+  <span class="pm2">Rs ${fmt(p.d)} cr debt · ${p.l!=null?fmt1(p.l)+"x levered":"—"} · ${esc(p.s)}</span>
+  <span class="pm2">${fmt1(me.r-p.r)}pp cheaper than you</span></div>`).join("")
+ :`<p class="save-note">Nobody comparable borrows meaningfully cheaper — you're setting the benchmark.</p>`;
+}
+/* ---------- rank card ---------- */
+let CARD="";
+function buildCard(me,P,pct,mAll,mLev,mSec,gap){
+ const today=new Date().toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+ CARD=`DEBT RANK — ${me.c} (${today})
+Effective cost of debt: ${fmt1(me.r)}% on Rs ${fmt(me.d)} cr${me.l!=null?` · leverage ${fmt1(me.l)}x`:""}
+Rank: more expensive than ${pct}% of ${P.length} comparable listed borrowers (FY filings, pulled ${PULLED})
+Market median: ${fmt1(mAll)}%${mLev!=null?` · median at this leverage: ${fmt1(mLev)}%`:""}${mSec!=null?` · sector median: ${fmt1(mSec)}%`:""}
+Gap vs a company like this: ${gap>0.5?"Rs "+fmt(gap)+" cr/yr":"at market"}
+
+Computed with the Front Wave Debt Rank (implied cost = FY finance cost / FY total debt; descriptive, not a credit opinion).
+Front Wave Research LLP · SEBI Reg. INH000018407 · frontwaveresearch.com`;
+}
+$("copy-card").addEventListener("click",()=>{
+ const done=()=>{$("copied").hidden=false;setTimeout(()=>$("copied").hidden=true,2200);};
+ const fb=()=>{const ta=document.createElement("textarea");ta.value=CARD;document.body.appendChild(ta);ta.select();try{document.execCommand("copy")}catch(e){}ta.remove();};
+ try{navigator.clipboard.writeText(CARD).then(done).catch(()=>{fb();done();});}catch(e){fb();done();}
+});
+</script>
+
+</body>
+</html>
